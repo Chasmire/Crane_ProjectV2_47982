@@ -1,4 +1,4 @@
 Crane_ProjectV2_47982
 =====================
 
-For the final project
+Repository for the final project in CSC-5.
