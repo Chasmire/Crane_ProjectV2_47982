@@ -19,7 +19,7 @@ void menu();    //Outputs menu
 void rules();   //Outputs the instructions
 void play();    //Handles gameplay
 void showBoard(int);//Outputs board from file
-int solved(int [5][5],int);//Check If Puzzle Is Solved
+int solved(int *,int);//Check If Puzzle Is Solved
 void mix(int [5][5],int );//Scrambles the board
 int bSize();   //handles board size selection
 void bOut(int [5][5],int);//output board to file
@@ -164,7 +164,7 @@ void play(){
        
         bOut(board,grid); //update the file that stores the board 
         showBoard(grid);//output stored board again
-        //check=solved(board,grid);//Check if the board is solved
+        check=solved(&board[0][0],grid);//Check if the board is solved
     }while(check==0);
 
     cout<<endl<<"                        ++++++++++++++++++++"<<endl;
@@ -260,29 +260,26 @@ void showBoard(int range){
 
 //Check If Puzzle Is Solved
 //------------------------------------------------------------------------------
-int solved(int b[5][5],int range){
+int solved(int *b,int range){
     //Declare Variables
     int size=range*range, count=0;
     int *solved=new int[size];
-    cout<<"solved board: ";
+
     //Fill the solved board array
     for(int i=0;i<size-1;i++){
         solved[i]=i+1;
-        cout<<solved[i]<<" ";
     }
     solved[size-1]=0;
     cout<<solved[size-1]<<endl;
-    cout<<"current board: ";
+    
     //Cycle through current board and compare it to solved
     for(int x=0;x<range;x++){
         for(int y=0;y<range;y++){
-            cout<<b[x][y]<<" ";
-            if(b[x][y]==solved[count]){
+            if(static_cast<int> (b[x*range+y])==solved[count]){
                 count++;
             }
         }
     }
-    cout<<endl;
     //if board and solved are the same return 1 and the game is won
     if (count==size) return 1;
     else return 0;
