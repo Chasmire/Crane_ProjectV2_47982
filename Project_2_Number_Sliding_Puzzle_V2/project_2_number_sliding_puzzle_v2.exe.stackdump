@@ -1,0 +1,11 @@
+Exception: STATUS_ACCESS_VIOLATION at eip=00401E93
+eax=00000000 ebx=0028AB10 ecx=80000038 edx=0000000F esi=00000000 edi=0028ABD4
+ebp=0028AB58 esp=0028AAF0 program=C:\Users\Owner\Documents\GitHub\ProjectV2_47982\Project_2_Number_Sliding_Puzzle_V2\dist\Debug\Cygwin_4.x-Windows\project_2_number_sliding_puzzle_v2.exe, pid 5880, thread main
+cs=0023 ds=002B es=002B fs=0053 gs=002B ss=002B
+Stack trace:
+Frame     Function  Args
+0028AB58  00401E93 (0028AB70, 00000004, 61185CA4, 610B6AE0)
+0028AC08  004017CB (6C6F2460, 00402304, 00000000, 00000000)
+0028AC38  004012DE (00000001, 0028AC5C, 80010100, 61007F58)
+0028ACF8  61007FB5 (00000000, 0028CD84, 61007120, 00000000)
+End of stack trace

@@ -17,12 +17,12 @@ using namespace std;
 //Function Prototypes
 void menu();    //Outputs menu
 void rules();   //Outputs the instructions
-void play();    //Handles Move Input
-void showBoard();//Outputs board from file
-int solved(int board[4][4]);//Check If Puzzle Is Solved
-void mix(int board[4][4]);//Scrambles the board
-void bSize();   //handles board size selection  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-void bOut(int [4][4]);//output board to file
+void play();    //Handles gameplay
+void showBoard(int);//Outputs board from file
+int solved(int [5][5],int);//Check If Puzzle Is Solved
+void mix(int [5][5],int );//Scrambles the board
+int bSize();   //handles board size selection
+void bOut(int [5][5],int);//output board to file
 
 // Main Execution Begins Here!!
 int main(int argv,char** argc){
@@ -72,59 +72,35 @@ int main(int argv,char** argc){
 //  Function Definitions!
 // *****************************************************************************
 
-//Output Board to file
-//------------------------------------------------------------------------------
-void bOut(int b[4][4]){
-    ofstream tempOut("board.dat");
-    
-    for(int r=0;r<4;r++){
-        for(int c=0;c<4;c++){
-            tempOut<<b[r][c]<<" ";
-        }
-    }
-    tempOut.close();
-}
-
-//Choose board size
-//------------------------------------------------------------------------------
-void bSize(){
-    int size;
-    cout<<"                         Select a puzzle size"<<endl;
-    cout<<"                              1) 3 x 3"<<endl;
-    cout<<"                              2) 4 x 4"<<endl;
-    cout<<"                              3) 5 x 5"<<endl;
-    cout<<"                         Enter # of choice: ";
-    cin>>size;
-    cout<<endl;
-    
-    
-}
-
-// Handles Move Input
+// Handles Gameplay
 //------------------------------------------------------------------------------
 void play(){
     //Declare Variables
     char move;
-    int board [4][4],check;
+    int board [5][5]={}, check=0, grid;
     
-    bSize();
-    mix(board); //Scramble the board
-    bOut(board);//output board to file 
-    showBoard();   //sets up and outputs the board
+    grid=bSize();//Select board size
+    mix(board,grid);; //Scramble the board
+    bOut(board,grid);//store board to file 
+    showBoard(grid);   //output stored board
     
-    
+    //Handles player move input
     do{
         cout<<endl<<"[W - Up] [S - Down] [A - Left] [D - Right]"<<endl;
         cout<<"Enter Q at any time to quit."<<endl;
         cout<<"Move: ";
         cin>>move;
         cout<<endl;
-
+      
+        //Finds the index of the element that holds 0 in the board array and
+        //depending on move, swaps the 0 with another element
+        //Move determines the element to be swapped with 0 by incrementing
+        //or decrementing the row or col index.
         switch (move){
             case 'S':
             case 's':{
-                for(int row=0;row<4;row++){
-                    for(int col=0;col<4;col++){
+                for(int row=0;row<grid;row++){
+                    for(int col=0;col<grid;col++){
                         if(board [row][col]==0){
                             if(row-1>=0){
                             board[row][col]=board[row-1][col];
@@ -137,10 +113,10 @@ void play(){
             }
             case 'W':
             case 'w':{
-                for(int row=0;row<4;row++){
-                    for(int col=0;col<4;col++){
+                for(int row=0;row<grid;row++){
+                    for(int col=0;col<grid;col++){
                         if(board [row][col]==0){
-                            if(row+1<4){
+                            if(row+1<grid){
                             board[row][col]=board[row+1][col];
                             board[row+=1][col]=0;
                             }
@@ -151,8 +127,8 @@ void play(){
             }
             case 'D':
             case 'd':{
-                for(int row=0;row<4;row++){
-                    for(int col=0;col<4;col++){
+                for(int row=0;row<grid;row++){
+                    for(int col=0;col<grid;col++){
                         if(board [row][col]==0){
                             if(col-1>=0){
                             board[row][col]=board[row][col-1];
@@ -165,10 +141,10 @@ void play(){
             }
             case 'A':
             case 'a':{
-                for(int row=0;row<4;row++){
-                    for(int col=0;col<4;col++){
+                for(int row=0;row<grid;row++){
+                    for(int col=0;col<grid;col++){
                         if(board [row][col]==0){
-                            if(col+1<4){
+                            if(col+1<grid){
                             board[row][col]=board[row][col+1];
                             board[row][col+=1]=0;
                             }
@@ -186,15 +162,48 @@ void play(){
             }
         }
        
-        bOut(board); //updates the output board in file 
-        
-        showBoard();//updates the board
-        check=solved(board);//Check if the board is solved
+        bOut(board,grid); //update the file that stores the board 
+        showBoard(grid);//output stored board again
+        //check=solved(board,grid);//Check if the board is solved
     }while(check==0);
 
     cout<<endl<<"                        ++++++++++++++++++++"<<endl;
     cout<<"                        +  PUZZLED SOLVED  +"<<endl;
     cout<<"                        ++++++++++++++++++++"<<endl;
+}
+
+//Choose board size
+//------------------------------------------------------------------------------
+int bSize(){
+    //Declare Variables
+    int size;
+    //Prompt for input and validate
+    do{
+        cout<<"                         Select a puzzle size"<<endl;
+        cout<<"                              1) 3 x 3"<<endl;
+        cout<<"                              2) 4 x 4"<<endl;
+        cout<<"                              3) 5 x 5"<<endl;
+        cout<<"                         Enter # of choice: ";
+        cin>>size;
+        cout<<endl;
+    }while(size!=1&&size!=2&&size!=3);
+    //Return the board dimensions
+    if(size==1) return 3;
+    else if(size==2) return 4;
+    else if(size==3) return 5;
+}
+
+//Output Board to file
+//------------------------------------------------------------------------------
+void bOut(int b[5][5],int range){
+    ofstream tempOut("board.dat");
+    //copy array to file
+    for(int i=0;i<range;i++){
+        for(int t=0;t<range;t++){
+            tempOut<<b[i][t]<<" ";
+        }
+    }
+    tempOut.close();
 }
 
 // Outputs Menu
@@ -210,51 +219,72 @@ void menu(){
 
 // Outputs Board from file
 //------------------------------------------------------------------------------
-void showBoard(){
+void showBoard(int range){
     //Declare Variables
-    int count=0, b[4][4];
+    int count=0,a[5][5];
     //open file for input
     ifstream tempIn("board.dat");
     
+    //board layout
+    cout<<"  +++++";
+    for(int i=0;i<range;i++){ 
+        cout<<"++++";
+    }
+    cout<<endl<<"  +";
+    
     //Cycle through array and output each #
-    cout<<"  +++++++++++++++++++++"<<endl<<"  +";
-    for (int r=0; r<=3;r++){
-        for(int c=0;c<=3;c++){
+    for (int r=0; r<range;r++){
+        for(int c=0;c<range;c++){
             //assign array from file
-            tempIn>>b[r][c];
+            tempIn>>a[r][c];
             //if count==1 signals beginning of a new row
             if (count==1){
                 cout<<"   +"<<endl<<"  +";
                 count=0;
             }
             //0 marks the empty spot on the board; replace with a -
-            if (b[r][c]==0) cout<<setw(4)<<"-";
+            if (a[r][c]==0) cout<<setw(4)<<"-";
             //if # on board is not 0 then output it
-            if (b[r][c]!=0) cout<<setw(4)<<b[r][c];
+            if (a[r][c]!=0) cout<<setw(4)<<a[r][c];
         }
         count++;
     }
-    cout<<"   +"<<endl;
-    cout<<"  +++++++++++++++++++++"<<endl;
+    //board layout
+    cout<<"   +"<<endl<<"  +++++";
+    for(int i=0;i<range;i++){ 
+        cout<<"++++";
+    }
     //close the file
     tempIn.close();
 }
 
 //Check If Puzzle Is Solved
 //------------------------------------------------------------------------------
-int solved(int board[4][4]){
+int solved(int b[5][5],int range){
     //Declare Variables
-    int solved[4][4]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,0},count=0;
+    int size=range*range, count=0;
+    int *solved=new int[size];
+    cout<<"solved board: ";
+    //Fill the solved board array
+    for(int i=0;i<size-1;i++){
+        solved[i]=i+1;
+        cout<<solved[i]<<" ";
+    }
+    solved[size-1]=0;
+    cout<<solved[size-1]<<endl;
+    cout<<"current board: ";
     //Cycle through current board and compare it to solved
-    for(int row=0;row<4;row++){
-        for(int col=0;col<4;col++){
-            if(board[row][col]==solved[row][col]){
+    for(int x=0;x<range;x++){
+        for(int y=0;y<range;y++){
+            cout<<b[x][y]<<" ";
+            if(b[x][y]==solved[count]){
                 count++;
             }
         }
     }
-    //if board and solved are the same return 1 - the game is won
-    if (count==16) return 1;
+    cout<<endl;
+    //if board and solved are the same return 1 and the game is won
+    if (count==size) return 1;
     else return 0;
 }
 
@@ -277,29 +307,36 @@ void rules(){
 
 // function to shuffle the board
 //------------------------------------------------------------------------------
-void mix(int board[4][4]){
+void mix(int b[5][5],int range){
     //Declare Variables
-    int temp, size = 16, p[size];
-    int dup;
+    int temp,dup,size=range*range;
+    int *p=new int[size];
     //set up a randomized 1D array
-    for (int c = 0; c < size; ++c){
+    for (int t = 0; t < size-1; ++t){
         do{
             dup=0;
-            temp=rand() % size;
-            for(int i = 0; i < size; ++i){   //check for duplicates
+            temp=rand() % (size-1)+1; 
+            //check for duplicates
+            for(int i = 0; i < size-1; ++i){
                 if(p[i] == temp){
                     ++dup;
                 }
             }
+        //If there is a duplicate do not assign to array
+        //and create a new random # to test 
         } while(dup != 0);
-        p[c] = temp;
+        p[t] = temp;
     }
-    //assign 1D array numbers to the 2D board array
+    p[size-1] = 0;
+    
+    //assign 1D array numbers to the 2D board array 
     int count=0;
-    for(int i = 0; i < 4; ++i){
-        for(int t = 0; t < 4; ++t){
-            board[i][t]=p[count];
+    for(int i = 0; i < range; ++i){
+        for(int t = 0; t < range; ++t){
+            b[i][t]=p[count];
             count++;
         }
     }
+    delete [] p;
+    p=0;
 }
