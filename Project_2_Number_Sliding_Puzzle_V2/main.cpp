@@ -56,14 +56,11 @@ int main(int argv,char** argc){
                 rules(); //Call Rules function
                 break;
             }
-            case '3':{
-                break;
-            }
         }
     }while(choice=='2'||choice=='y'||choice=='Y');
-
+	
     cout<<endl<<"                          !+!+!GoodBye!+!+!"<<endl<<endl;
-
+    
     //Exit Main
     return 0;
 }
@@ -91,7 +88,6 @@ void play(){
         cout<<"Move: ";
         cin>>move;
         cout<<endl;
-        nMove++;
       
         //Finds the index of the element that holds 0 in the board array and
         //depending on move, swaps the 0 with another element
@@ -106,6 +102,7 @@ void play(){
                             if(row-1>=0){
                             board[row][col]=board[row-1][col];
                             board[row-1][col]=0;
+							nMove++;
                             }
                         }
                     }
@@ -120,6 +117,7 @@ void play(){
                             if(row+1<grid){
                             board[row][col]=board[row+1][col];
                             board[row+=1][col]=0;
+							nMove++;
                             }
                         }
                     }
@@ -134,6 +132,7 @@ void play(){
                             if(col-1>=0){
                             board[row][col]=board[row][col-1];
                             board[row][col-1]=0;
+							nMove++;
                             }
                         }
                     }
@@ -148,6 +147,7 @@ void play(){
                             if(col+1<grid){
                             board[row][col]=board[row][col+1];
                             board[row][col+=1]=0;
+							nMove++;
                             }
                         }
                     }
@@ -192,7 +192,7 @@ int bSize(){
     //Return the board dimensions
     if(size==1) return 3;
     else if(size==2) return 4;
-    else if(size==3) return 5;
+    else return 5;
 }
 
 //Output Board to file
@@ -278,11 +278,14 @@ int solved(int b[5][5],int range){
     //Cycle through current board and compare it to solved
     for(int x=0;x<range;x++){
         for(int y=0;y<range;y++){
-            if(static_cast<int> (b[x][y])==solved[count]){
+            if(b[x][y]==solved[count]){
                 count++;
             }
         }
     }
+	//Clear allocated memory
+	delete [] solved;
+	solved=0;
     //if board and solved are the same return 1 and the game is won
     if (count==size) return 1;
     else return 0;
@@ -312,14 +315,14 @@ void mix(int b[5][5],int range){
     int temp,dup,size=range*range;
     int *p=new int[size];
     //set up a randomized 1D array
-    for (int t = 0; t < size-1; ++t){
+    for (int t = 0; t < size-1; t++){
         do{
             dup=0;
             temp=rand() % (size-1)+1; 
             //check for duplicates
-            for(int i = 0; i < size-1; ++i){
+            for(int i = 0; i < size-1; i++){
                 if(p[i] == temp){
-                    ++dup;
+                    dup++;
                 }
             }
         //If there is a duplicate do not assign to array
@@ -331,12 +334,13 @@ void mix(int b[5][5],int range){
     
     //assign 1D array numbers to the 2D board array 
     int count=0;
-    for(int i = 0; i < range; ++i){
-        for(int t = 0; t < range; ++t){
+    for(int i = 0; i < range; i++){
+        for(int t = 0; t < range; t++){
             b[i][t]=p[count];
             count++;
         }
     }
+	//Clear allocated memory
     delete [] p;
     p=0;
 }
