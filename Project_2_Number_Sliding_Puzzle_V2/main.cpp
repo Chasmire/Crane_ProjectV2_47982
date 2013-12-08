@@ -23,6 +23,7 @@ int solved(int [5][5],int);//Check If Puzzle Is Solved
 void mix(int [5][5],int );//Scrambles the board
 int bSize();   //handles board size selection
 void bOut(int [5][5],int);//output board to file
+bool isValid(int [],int,int);//Checks if generated board is possible to solve
 
 // Main Execution Begins Here!!
 int main(int argv,char** argc){
@@ -283,9 +284,9 @@ int solved(int b[5][5],int range){
             }
         }
     }
-	//Clear allocated memory
-	delete [] solved;
-	solved=0;
+    //Clear allocated memory
+    delete [] solved;
+    solved=0;
     //if board and solved are the same return 1 and the game is won
     if (count==size) return 1;
     else return 0;
@@ -308,31 +309,43 @@ void rules(){
     cout<<"         [W - Up] [S - Down] [A - Left] [D - Right]"<<endl<<endl;
 }
 
-// function to shuffle the board
+// Randomizes Board
 //------------------------------------------------------------------------------
 void mix(int b[5][5],int range){
     //Declare Variables
     int temp,dup,size=range*range;
     int *p=new int[size];
-    //set up a randomized 1D array
-    for (int t = 0; t < size-1; t++){
-        do{
-            dup=0;
-            temp=rand() % (size-1)+1; 
-            //check for duplicates
-            for(int i = 0; i < size-1; i++){
-                if(p[i] == temp){
-                    dup++;
+    
+    do{
+        //Initialize/reset array p to all 0
+        //(must do this to validate board solvability more than once)
+        for(int i=0;i<size-1;i++){
+            p[i]=0;
+        }
+
+        //set up a randomized 1D array
+        for (int t = 0; t < size-1; t++){
+            do{
+                dup=0;
+                //create a random #
+                temp=rand() % (size-1)+1;
+                //test for duplicates
+                for(int i = 0; i < size-1; i++){
+                    if(p[i] == temp){
+                        dup++;
+                    }
                 }
-            }
-        //If there is a duplicate do not assign to array
-        //and create a new random # to test 
-        } while(dup != 0);
-        p[t] = temp;
-    }
+             //If there is a duplicate create a new random # to test 
+            } while(dup != 0);
+            
+            //assign the random # to the array if no duplicates are found
+            p[t] = temp;
+        }
+     //checks for board solvability
+    }while(!isValid(p,size,range));
     p[size-1] = 0;
     
-    //assign 1D array numbers to the 2D board array 
+    //copy 1D array to the 2D array 
     int count=0;
     for(int i = 0; i < range; i++){
         for(int t = 0; t < range; t++){
@@ -340,7 +353,26 @@ void mix(int b[5][5],int range){
             count++;
         }
     }
-	//Clear allocated memory
+    //Clear allocated memory
     delete [] p;
     p=0;
+}
+
+// Checks if generated board is possible to solve
+//------------------------------------------------------------------------------
+bool isValid(int a[],int size,int grid){
+    //Declare Variables
+    int inver=0;
+    //Count # of inversions within the array
+    for(int i=0;i<size-1;i++){
+        for(int t=i;t<size-1;t++){
+            if(a[t]<a[i]) inver++;
+        }
+    }   
+    //Board Solvability Conditions
+    //Grid width is odd -> # of inversions is even
+    //Grid width is even -> # of inversions odd
+    if((grid%2==1)&&(inver%2==0) || (grid%2==0)&&(inver%2==1)) return true;
+    
+    return false;//board is not solvable
 }
