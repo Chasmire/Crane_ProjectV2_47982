@@ -19,7 +19,7 @@ void menu();    //Outputs menu
 void rules();   //Outputs the instructions
 void play();    //Handles gameplay
 void showBoard(int);//Outputs board from file
-int solved(int *,int);//Check If Puzzle Is Solved
+int solved(int [5][5],int);//Check If Puzzle Is Solved
 void mix(int [5][5],int );//Scrambles the board
 int bSize();   //handles board size selection
 void bOut(int [5][5],int);//output board to file
@@ -32,7 +32,7 @@ int main(int argv,char** argc){
     srand(time(0));
     cout<<"                 +++++++++++++++++++++++++++++++++"<<endl;
     cout<<"                 +                               +"<<endl;
-    cout<<"                 +  N u m b e r __+__ S l i d e  +"<<endl;
+    cout<<"                 +  N u m b e r   +   S l i d e  +"<<endl;
     cout<<"                 +                               +"<<endl;
     cout<<"                 +++++++++++++++++++++++++++++++++"<<endl;
 
@@ -48,7 +48,7 @@ int main(int argv,char** argc){
         switch (choice){
             case '1':{
                 play();	//Call move Function
-                cout<<"Return to the menu? (Y/N): ";
+                cout<<"Return to main menu? (Y/N): ";
                 cin>>choice;
                 break;
             }
@@ -77,7 +77,7 @@ int main(int argv,char** argc){
 void play(){
     //Declare Variables
     char move;
-    int board [5][5]={}, check=0, grid;
+    int board [5][5]={}, check=0, grid, nMove=0;
     
     grid=bSize();//Select board size
     mix(board,grid);; //Scramble the board
@@ -87,10 +87,11 @@ void play(){
     //Handles player move input
     do{
         cout<<endl<<"[W - Up] [S - Down] [A - Left] [D - Right]"<<endl;
-        cout<<"Enter Q at any time to quit."<<endl;
+        cout<<" -Enter Q at any time to stop game."<<endl;
         cout<<"Move: ";
         cin>>move;
         cout<<endl;
+        nMove++;
       
         //Finds the index of the element that holds 0 in the board array and
         //depending on move, swaps the 0 with another element
@@ -161,15 +162,16 @@ void play(){
                 cout<<"!!Invalid Move!!"<<endl;
             }
         }
-       
+        
         bOut(board,grid); //update the file that stores the board 
         showBoard(grid);//output stored board again
-        check=solved(&board[0][0],grid);//Check if the board is solved
+        check=solved(board,grid);//Check if the board is solved
     }while(check==0);
 
     cout<<endl<<"                        ++++++++++++++++++++"<<endl;
     cout<<"                        +  PUZZLED SOLVED  +"<<endl;
     cout<<"                        ++++++++++++++++++++"<<endl;
+    cout<<"                  You beat the puzzle in "<<nMove<<" moves!"<<endl<<endl;
 }
 
 //Choose board size
@@ -196,13 +198,15 @@ int bSize(){
 //Output Board to file
 //------------------------------------------------------------------------------
 void bOut(int b[5][5],int range){
+    //Open file to write to
     ofstream tempOut("board.dat");
     //copy array to file
     for(int i=0;i<range;i++){
         for(int t=0;t<range;t++){
-            tempOut<<b[i][t]<<" ";
+            tempOut<<b[i][t]<<" "; //Writes to file
         }
     }
+    //close file
     tempOut.close();
 }
 
@@ -222,7 +226,7 @@ void menu(){
 void showBoard(int range){
     //Declare Variables
     int count=0,a[5][5];
-    //open file for input
+    //open file to read from
     ifstream tempIn("board.dat");
     
     //board layout
@@ -235,17 +239,17 @@ void showBoard(int range){
     //Cycle through array and output each #
     for (int r=0; r<range;r++){
         for(int c=0;c<range;c++){
-            //assign array from file
+            //read in array from file
             tempIn>>a[r][c];
-            //if count==1 signals beginning of a new row
+            //signals beginning of a new row
             if (count==1){
                 cout<<"   +"<<endl<<"  +";
                 count=0;
             }
-            //0 marks the empty spot on the board; replace with a -
+            //0 marks the empty spot on the board; output a - instead of the #
             if (a[r][c]==0) cout<<setw(4)<<"-";
             //if # on board is not 0 then output it
-            if (a[r][c]!=0) cout<<setw(4)<<a[r][c];
+            else cout<<setw(4)<<a[r][c];
         }
         count++;
     }
@@ -260,22 +264,21 @@ void showBoard(int range){
 
 //Check If Puzzle Is Solved
 //------------------------------------------------------------------------------
-int solved(int *b,int range){
+int solved(int b[5][5],int range){
     //Declare Variables
     int size=range*range, count=0;
     int *solved=new int[size];
-
+    
     //Fill the solved board array
     for(int i=0;i<size-1;i++){
         solved[i]=i+1;
     }
     solved[size-1]=0;
-    cout<<solved[size-1]<<endl;
     
     //Cycle through current board and compare it to solved
     for(int x=0;x<range;x++){
         for(int y=0;y<range;y++){
-            if(static_cast<int> (b[x*range+y])==solved[count]){
+            if(static_cast<int> (b[x][y])==solved[count]){
                 count++;
             }
         }
@@ -287,19 +290,19 @@ int solved(int *b,int range){
 
 // Outputs Rules
 //------------------------------------------------------------------------------
-void rules(){
-        
+void rules(){      
     cout<<endl<<" + The goal of this puzzle game is to place the numbers"<<endl;
     cout<<"   in order; smallest to largest, left to right, top to bottom."<<endl<<endl;
     cout<<" + Turn this --> 3   9  14   4       Into this -->  1   2   3   4"<<endl;
     cout<<"                 8   2  10  11                      5   6   7   8"<<endl;
     cout<<"                15   6   7  12                      9  10  11  12"<<endl;
-    cout<<"                 5  13   1   +                     13  14  15   -"<<endl<<endl;
+    cout<<"                 5  13   1   -                     13  14  15   -"<<endl<<endl;
     cout<<" + Move numbers into the place of the '-' to solve the puzzle."<<endl;
-    cout<<"   As you move numbers around the '-'  will swap places with" <<endl;
+    cout<<"   As you move numbers around, the '-'  will swap places with" <<endl;
     cout<<"   that number."<<endl<<endl;
-    cout<<" + Use the W,A,S,D keys to move numbers INTO  the '-' space:"<<endl;
-    cout<<"     [W - Up] [S - Down] [A - Left] [D - Right]"<<endl<<endl;
+    cout<<" + Use the W,A,S,D keys to move numbers from above, below, left,"<<endl;
+    cout<<"   or right of the '-' INTO the '-' space:"<<endl;
+    cout<<"         [W - Up] [S - Down] [A - Left] [D - Right]"<<endl<<endl;
 }
 
 // function to shuffle the board
