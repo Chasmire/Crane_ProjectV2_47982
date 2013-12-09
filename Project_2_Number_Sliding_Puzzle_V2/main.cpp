@@ -371,8 +371,8 @@ bool isValid(int a[],int size,int grid){
     }   
     //Board Solvability Conditions
     //Grid width is odd -> # of inversions is even
-    //Grid width is even -> # of inversions odd
-    if((grid%2==1)&&(inver%2==0) || (grid%2==0)&&(inver%2==1)) return true;
+    //Grid width is even & 0 on odd row from bottom -> # of inversions even (0 is always in last row)
+    if(((grid%2==1)&&(inver%2==0)) || ((grid%2==0)&&(inver%2==0))) return true;
     
     return false;//board is not solvable
 }
