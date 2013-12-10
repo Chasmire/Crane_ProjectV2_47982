@@ -13,16 +13,17 @@
 using namespace std;
 
 //Global Constants
+const int MAX_COL=5; //Max possible columns in 2d board array
 
 //Function Prototypes
 void menu();    //Outputs menu
 void rules();   //Outputs the instructions
 void play();    //Handles gameplay
 void showBoard(int);//Outputs board from file
-int solved(int [5][5],int);//Check If Puzzle Is Solved
-void mix(int [5][5],int );//Scrambles the board
-int bSize();   //handles board size selection
-void bOut(int [5][5],int);//output board to file
+int solved(int [][MAX_COL],int range);//Check If Puzzle Is Solved
+void mix(int [][MAX_COL],int );//Scrambles the board
+void bSize(int &size);   //handles board size selection
+void bOut(int [][MAX_COL],int);//output board to file
 bool isValid(int [],int,int);//Checks if generated board is possible to solve
 
 // Main Execution Begins Here!!
@@ -75,9 +76,9 @@ int main(int argv,char** argc){
 void play(){
     //Declare Variables
     char move;
-    int board [5][5]={}, check=0, grid, nMove=0;
+    int board [MAX_COL][MAX_COL]={}, check, grid, nMove=0;
     
-    grid=bSize();//Select board size
+    bSize(grid);//Select board size
     mix(board,grid);; //Scramble the board
     bOut(board,grid);//store board to file 
     showBoard(grid);   //output stored board
@@ -177,9 +178,7 @@ void play(){
 
 //Choose board size
 //------------------------------------------------------------------------------
-int bSize(){
-    //Declare Variables
-    int size;
+void bSize(int &size){
     //Prompt for input and validate
     do{
         cout<<"                         Select a puzzle size"<<endl;
@@ -191,14 +190,14 @@ int bSize(){
         cout<<endl;
     }while(size!=1&&size!=2&&size!=3);
     //Return the board dimensions
-    if(size==1) return 3;
-    else if(size==2) return 4;
-    else return 5;
+    if(size==1) size=3;
+    else if(size==2) size=4;
+    else size=5;
 }
 
 //Output Board to file
 //------------------------------------------------------------------------------
-void bOut(int b[5][5],int range){
+void bOut(int b[][MAX_COL],int range){
     //Open file to write to
     ofstream tempOut("board.dat");
     //copy array to file
@@ -265,7 +264,7 @@ void showBoard(int range){
 
 //Check If Puzzle Is Solved
 //------------------------------------------------------------------------------
-int solved(int b[5][5],int range){
+int solved(int b[][MAX_COL],int range){
     //Declare Variables
     int size=range*range, count=0;
     int *solved=new int[size];
@@ -311,7 +310,7 @@ void rules(){
 
 // Randomizes Board
 //------------------------------------------------------------------------------
-void mix(int b[5][5],int range){
+void mix(int b[][MAX_COL],int range){
     //Declare Variables
     int temp,dup,size=range*range;
     int *p=new int[size];
